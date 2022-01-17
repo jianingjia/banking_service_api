@@ -4,9 +4,12 @@ info:
   title: Banking Service API Documentations
 # during dev, should point to your local machine
 host: localhost:4000
-# basePath prefixes all resource paths 
+# basePath prefixes all resource paths
 basePath: /api
-# 
+tags:
+- name: "User"
+- name: "Account"
+- name: "Transaction"
 schemes:
   # tip: remove http to make production-grade
   - http
@@ -18,11 +21,15 @@ consumes:
 produces:
   - application/json
 paths:
+  #endpoint for user login
   /user:
     # binds a127 app logic to a route
     x-swagger-router-controller: userController
     put:
-      description: Checks user credentials and give success message
+      tags:
+      - User
+      summary: User login 
+      description: Checks user credentials and returns success message
       # used as the method name of the controller
       operationId: userLoginController
       parameters:
@@ -30,19 +37,267 @@ paths:
           name: body
           description: The user request body
           required: true
-          schema: 
+          schema:
             $ref: "#/definitions/UserLoginRequest"
       responses:
         "200":
           description: Success
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/UserLoginResponse"
+            $ref: "#/definitions/SuccessResponse"
         # responses may fall through to errors
-        default:
-          description: Error
+        "404":
+          description: User Not Found
           schema:
-            $ref: "#/definitions/ErrorResponse"
+            # a pointer to a definition
+            $ref: "#/definitions/NotFoundResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/UnauthorizedResponse"
+        "500":
+          description: Internal Error
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+
+  #endpoint for create account
+  /user/{clientCardNumber}/accounts:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: accountController
+    post:
+      tags:
+        - Account
+      summary: Create an account
+      description: Create an account for user and returns success message
+      # used as the method name of the controller
+      operationId: newAccountController
+      parameters:
+        - name: clientCardNumber
+          in: path
+          description: The user's client card number
+          type: integer
+          format: int64
+          minimum: 1000000000000000
+          maximum: 9999999999999999
+          required: true
+        - in: body
+          name: body
+          description: The new account request body
+          required: true
+          schema:
+            $ref: "#/definitions/NewAccountRequest"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/SuccessResponse"
+        # responses may fall through to errors
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+        "500":
+          description: Internal Error
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+    #endpoint for retrieve account
+    get:
+      tags:
+        - Account
+      summary: Retrieve the list of accounts
+      description: Retrieve the list of accounts for a user
+      # used as the method name of the controller
+      operationId: accountListController
+      parameters:
+        - name: clientCardNumber
+          in: path
+          description: The user's client card number
+          type: integer
+          format: int64
+          minimum: 1000000000000000
+          maximum: 9999999999999999
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              # a pointer to a definition
+              $ref: "#/definitions/Account"
+        # responses may fall through to errors
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+        "404":
+          description: User Not Found
+          schema:
+            $ref: "#/definitions/NotFoundResponse"
+        "500":
+          description: Internal Error
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+  #endpoint for updating account name
+  /accounts/{accountNumber}:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: accountController
+    put:
+      tags:
+      - Account
+      summary: Update account name
+      description: Update the specified account name and returns success message
+      # used as the method name of the controller
+      operationId: updateAccountNameController
+      parameters:
+        - name: accountNumber
+          in: path
+          description: The user's account number
+          type: integer
+          minimum: 1000000
+          maximum: 9999999
+          required: true
+        - in: body
+          name: body
+          description: The account name change request body
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateAccountNameRequest"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/SuccessResponse"
+        # responses may fall through to errors
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+        "404":
+          description: Account Not Found
+          schema:
+            $ref: "#/definitions/NotFoundResponse"
+        "500":
+          description: Internal Error
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+    # endpoint for deleting an account
+    delete:
+      tags:
+      - Account
+      summary: Delete an account
+      description: Delete the specified account and returns success message
+      # used as the method name of the controller
+      operationId: deleteAccountController
+      parameters:
+        - name: accountNumber
+          in: path
+          description: The user's account number
+          type: integer
+          minimum: 1000000
+          maximum: 9999999
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/SuccessResponse"
+        # responses may fall through to errors
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+        "404":
+          description: Account Not Found
+          schema:
+            $ref: "#/definitions/NotFoundResponse"
+        "500":
+          description: Internal Error
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+  #endpoint for create transaction
+  /accounts/{accountNumber}/transactions:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: transactionController
+    post:
+      tags:
+      - Transaction
+      summary: Create a new transaction
+      description: Create a transaction for account and returns success message
+      # used as the method name of the controller
+      operationId: createTransactionController
+      parameters:
+        - name: accountNumber
+          in: path
+          description: The user's account number
+          type: integer
+          minimum: 1000000
+          maximum: 9999999
+          required: true
+        - in: body
+          name: body
+          description: The new transaction request body
+          required: true
+          schema:
+            $ref: "#/definitions/NewTransactionRequest"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/SuccessResponse"
+        # responses may fall through to errors
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+        "500":
+          description: Internal Error
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+    get:
+      tags:
+      - Transaction
+      summary: Retrieve the list of transaction for an account
+      description: Retrieve the list of transactions for a user
+      # used as the method name of the controller
+      operationId: transactionListController
+      parameters:
+        - name: accountNumber
+          in: path
+          description: The user's account number
+          type: integer
+          minimum: 1000000
+          maximum: 9999999
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              # a pointer to a definition
+              $ref: "#/definitions/Transaction"
+        # responses may fall through to errors
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+        "404":
+          description: Account Not Found
+          schema:
+            $ref: "#/definitions/NotFoundResponse"
+        "500":
+          description: Internal Error
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
@@ -53,20 +308,168 @@ definitions:
       - password
     properties:
       clientCardNumber:
-        type: number
+        type: integer
+        format: int64
+        example: 1000000000000000
+        minimum: 1000000000000000
+        maximum: 9999999999999999
       password:
         type: string
-  UserLoginResponse:
+        example: testuser
+        minLength: 8
+        maxLength: 32
+  NewAccountRequest:
     required:
+      - name
+      - type
+    properties:
+      name:
+        type: string
+        example: John Doe's savings account
+        maxLength: 50
+      type:
+        type: string
+        enum:
+          - "SAVING"
+          - "CHEQUING"
+  UpdateAccountNameRequest:
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        example: John's savings account
+        maxLength: 50
+  NewTransactionRequest:
+    required:
+      - name
+      - amount
+    properties:
+      name:
+        type: string
+        example: Transaction 1
+        maxLength: 50
+      amount:
+        type: number
+        example: 100.28
+        format: double
+  Account:
+    description: Account object definition
+    type: object
+    required:
+      - clientCardNumber
+      - accountNumber
+      - name
+      - type
+      - balance
+    properties:
+      clientCardNumber:
+        type: integer
+        format: int64
+        example: 1000000000000000
+        minimum: 1000000000000000
+        maximum: 9999999999999999
+      accountNumber:
+        type: integer
+        example: 1000000
+        minimum: 1000000
+        maximum: 9999999
+      name:
+        type: string
+        example: John Doe's savings account
+        maxLength: 50
+      type:
+        type: string
+        enum:
+          - "SAVING"
+          - "CHEQUING"
+      balance:
+        type: number
+        example: 100.28
+        format: double
+  Transaction:
+    description: Transaction object definition
+    type: object
+    required:
+      - accountNumber
+      - transactionNumber
+      - name
+      - date
+      - balance
+    properties:
+      accountNumber:
+        type: integer
+        example: 1000000
+        minimum: 1000000
+        maximum: 9999999
+      transactionNumber:
+        type: integer
+        example: 10000000
+        minimum: 10000000
+        maximum: 99999999
+      name:
+        type: string
+        example: transaction 1
+        maxLength: 50
+      date:
+        type: number
+        format: date
+      balance:
+        type: number
+        example: 100.28
+        format: double
+  SuccessResponse:
+    required:
+      - status
       - message
     properties:
+      status:
+        type: integer
+        example: 200
       message:
         type: string
-  ErrorResponse:
+        example: ok
+  BadRequestResponse:
     required:
+      - status
       - message
     properties:
+      status:
+        type: integer
+        example: 400
       message:
         type: string
-
-
+        example: Bad Request
+  NotFoundResponse:
+    required:
+      - status
+      - message
+    properties:
+      status:
+        type: integer
+        example: 404
+      message:
+        type: string
+        example: Not Found
+  UnauthorizedResponse:
+    required:
+      - status
+      - message
+    properties:
+      status:
+        type: integer
+        example: 401
+      message:
+        type: string
+        example: Unauthorized
+  InternalErrorResponse:
+    required:
+      - status
+      - message
+    properties:
+      status:
+        type: integer
+        example: 500
+      message:
+        type: string
+        example: Internal Error

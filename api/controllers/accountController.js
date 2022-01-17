@@ -1,41 +1,47 @@
-const account = require('../model/account');
+const { system } = require('faker');
+const accountDao = require('../dao/accountDao');
+const account = require('../model/account')
 
 const newAccountController = (req, res) => {
 
-    var {name, type} = req.body;
-    const clientCardNumber = Number(req.params.clientCardNumber);
+    var { name, type } = req.body;
+    const clientCardNumber = Number(req.swagger.params.clientCardNumber.value);
     name = String(name);
     type = String(type);
 
     // validate request
     if (Object.keys(req.body).length == 0) {
-        res.status(400).send({
+        res.send({
+            status: 400,
             message: "Content can not be empty!"
         });
         return;
     }
-
     if (clientCardNumber < 1000000000000000 || clientCardNumber > 9999999999999999) {
-        res.status(400).send({
+        res.send({
+            status: 400,
             message: "Client card number must be 16 digits!"
         });
         return;
     }
 
     if (!name) {
-        res.status(400).send({
+        res.send({
+            status: 400,
             message: "Account name can not be empty!"
         });
         return;
     }
     if (!type) {
-        res.status(400).send({
+        res.send({
+            status: 400,
             message: "Account type can not be empty!"
         });
         return;
     }
     if (type != 'SAVING' && type != 'CHEQUING') {
-        res.status(400).send({
+        res.send({
+            status: 400,
             message: "Account type must be one of SAVING or CHEQUING!"
         });
         return;
@@ -49,22 +55,25 @@ const newAccountController = (req, res) => {
 
     // function call to account model class with error handling
     try {
-        account.createAccount(newAccount, (e, data) => {
+        accountDao.createAccountDao(newAccount, (e, data) => {
             if (data) {
-                res.status(200).send({
+                res.send({
+                    status: 200,
                     message: 'Account created successfully'
                 });
                 return;
             }
             else {
-                res.status(500).send({
+                res.send({
+                    status: 500,
                     message: 'Something went wrong creating the account'
                 });
                 return;
             }
         });
     } catch (e) {
-        res.status(500).send({
+        res.send({
+            status: 500,
             message:
                 e.message || 'Something went wrong creating the account.'
         });
@@ -75,35 +84,38 @@ const newAccountController = (req, res) => {
 
 const accountListController = (req, res) => {
 
-    const clientCardNumber = Number(req.params.clientCardNumber);
+    const clientCardNumber = Number(req.swagger.params.clientCardNumber.value);
 
     // validate request
 
     if (clientCardNumber < 1000000000000000 || clientCardNumber > 9999999999999999) {
-        res.status(400).send({
+        res.send({
+            status: 400,
             message: "Client card number must be 16 digits!"
         });
         return;
     }
-   
+
 
     // function call to account model class with error handling
     try {
-        account.accountList(clientCardNumber, (e, data) => {
+        accountDao.accountListDao(clientCardNumber, (e, data) => {
             if (data) {
                 res.status(200).send(data);
                 return;
             }
 
             if (e.kind == 'resource_not_available') {
-                res.status(200).send({
+                res.send({
+                    status: 404,
                     message: 'There is no account to display.'
                 });
                 return;
             }
 
             else {
-                res.status(500).send({
+                res.send({
+                    status: 500,
                     message:
                         e.message || 'Something went wrong retrieving the accounts.'
                 });
@@ -111,7 +123,8 @@ const accountListController = (req, res) => {
             }
         });
     } catch (e) {
-        res.status(500).send({
+        res.send({
+            status: 500,
             message:
                 e.message || 'Something went wrong retrieving the accounts.'
         });
@@ -123,19 +136,21 @@ const accountListController = (req, res) => {
 const updateAccountNameController = (req, res) => {
 
     var { name } = req.body;
-    const accountNumber = Number(req.params.accountNumber);
+    const accountNumber = Number(req.swagger.params.accountNumber.value);
     name = String(name);
 
     // validate request
     if (Object.keys(req.body).length == 0) {
-        res.status(400).send({
+        res.send({
+            status: 400,
             message: "Content can not be empty!"
         });
         return;
     }
 
     if (accountNumber < 1000000 || accountNumber > 9999999) {
-        res.status(400).send({
+        res.send({
+            status: 400,
             message: "Account number must be 7 digits!"
         });
         return;
@@ -143,21 +158,24 @@ const updateAccountNameController = (req, res) => {
 
     // function call to account model class with error handling
     try {
-        account.updateAccountName(accountNumber, name, (e, data) => {
+        accountDao.updateAccountNameDao(accountNumber, name, (e, data) => {
             if (data) {
-                res.status(200).send({
+                res.send({
+                    status: 200,
                     message: 'Account name updated successfully'
                 });
                 return;
             }
             if (e.kind = 'not_found') {
-                res.status(200).send({
+                res.send({
+                    status: 404,
                     message: 'Account does not exist.'
                 });
                 return;
             }
             else {
-                res.status(500).send({
+                res.send({
+                    status: 500,
                     message: 'Something went wrong updating the account'
                 });
                 return;
@@ -165,6 +183,7 @@ const updateAccountNameController = (req, res) => {
         });
     } catch (e) {
         res.status(500).send({
+            status: 500,
             message:
                 e.message || 'Something went wrong updating the account.'
         });
@@ -175,12 +194,13 @@ const updateAccountNameController = (req, res) => {
 
 const deleteAccountController = (req, res) => {
 
-    const accountNumber = Number(req.params.accountNumber);
+    const accountNumber = Number(req.swagger.params.accountNumber.value);
 
     // validate request
-    
+
     if (accountNumber < 1000000 || accountNumber > 9999999) {
-        res.status(400).send({
+        res.send({
+            status: 400,
             message: "Account number must be 7 digits!"
         });
         return;
@@ -188,28 +208,32 @@ const deleteAccountController = (req, res) => {
 
     // function call to account model class with error handling
     try {
-        account.deleteAccount(accountNumber, (e, data) => {
+        accountDao.deleteAccountDao(accountNumber, (e, data) => {
             if (data) {
-                res.status(200).send({
+                res.send({
+                    status: 200,
                     message: 'Account deleted successfully'
                 });
                 return;
             }
             if (e.kind = 'not_found') {
-                res.status(200).send({
+                res.send({
+                    status: 404,
                     message: 'Account does not exist.'
                 });
                 return;
             }
             else {
-                res.status(500).send({
+                res.send({
+                    status: 500,
                     message: 'Something went wrong deleting the account'
                 });
                 return;
             }
         });
     } catch (e) {
-        res.status(500).send({
+        res.send({
+            status: 500,
             message:
                 e.message || 'Something went wrong deleting the account.'
         });
@@ -218,6 +242,7 @@ const deleteAccountController = (req, res) => {
 }
 
 
-module.exports = { newAccountController, accountListController,
+module.exports = {
+    newAccountController, accountListController,
     updateAccountNameController, deleteAccountController
 }
