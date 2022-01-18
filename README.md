@@ -3,7 +3,7 @@
 
 Welcome to the Banking Service API
 
-Here is the swagger link to the service: http://localhost:4000/swagger
+Here is the swagger link to the service: https://banking-service-api.herokuapp.com/swagger
 
 This microservice allows users to log into their banking service, create, query, and delete accounts, as well as transactions to be created and queried within the accounts. 
 
