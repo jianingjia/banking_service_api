@@ -22,7 +22,8 @@ var config = {
 var swaggerDocument = yaml.load('./api/swagger/swagger.yaml');
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/', function (req, res) {
-  res.redirect(req.baseurl + '/swagger');
+  res.redirect('/api/swagger');
+  // res.redirect(req.baseurl + '/swagger');
 });
 
 SwaggerExpress.create(config, function (err, swaggerExpress) {
