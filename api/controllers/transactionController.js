@@ -1,6 +1,7 @@
 
 const transaction = require('../model/transaction');
 const transactionDao = require('../dao/transactionDao');
+const { logger } = require('../helpers/logger');
 
 const createTransactionController = (req, res) => {
 
@@ -79,7 +80,6 @@ const createTransactionController = (req, res) => {
 const transactionListController = (req, res) => {
 
     const accountNumber = Number(req.swagger.params.accountNumber.value);
-
     // validate request
 
     if (accountNumber < 1000000 || accountNumber > 9999999) {
@@ -126,4 +126,55 @@ const transactionListController = (req, res) => {
     }
 }
 
-module.exports = { createTransactionController, transactionListController }
+const transactionFilterByDateController = (req, res) => {
+    const accountNumber = Number(req.swagger.params.accountNumber.value);
+    const start = String(req.swagger.params.start.value);
+    const end = String(req.swagger.params.end.value);
+    
+    // validate request
+
+    if (accountNumber < 1000000 || accountNumber > 9999999) {
+        res.send({
+            status: 400,
+            message: "Account number must be 7 digits!"
+        });
+        return;
+    }
+
+    // function call to transaction model class with error handling
+    try {
+        
+        transactionDao.transactionFilterByDateDao(accountNumber, start, end, (e, data) => {
+            if (data) {
+                res.status(200).send(data);
+                return;
+            }
+
+            if (e.kind == 'resource_not_available') {
+                res.send({
+                    status: 404,
+                    message: 'There is no transaction to display.'
+                });
+                return;
+            }
+
+            else {
+                res.send({
+                    status: 500,
+                    message:
+                        e.message || 'Something went wrong retrieving the transaction.'
+                });
+                return;
+            }
+        });
+    } catch (e) {
+        res.send({
+            status: 500,
+            message:
+                e.message || 'Something went wrong retrieving the transaction.'
+        });
+
+    }
+}
+
+module.exports = { createTransactionController, transactionListController, transactionFilterByDateController }

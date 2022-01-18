@@ -1,4 +1,5 @@
 const {connection} = require('../helpers/database.js');
+const {logger} = require('../helpers/logger');
 
 
 function userLoginDao (clientCardNumber, password, result) {
@@ -8,27 +9,27 @@ function userLoginDao (clientCardNumber, password, result) {
     connection.query(sqlQuery, function(e, data) {
         // if query gives error
         if (e) {
-          console.log('error: ', e);
+          logger.info('error: ', e);
           result(e, null);
           return;
         }
   
         // if client has been found 
         if ((data.length) && (data[0].clientCardNumber === clientCardNumber) && (data[0].password === password)) {
-          console.log('Login successful');
+          logger.info('Login successful');
           result(null, data[0]);
           return;
         }
   
         // client not found
         if (Object.keys(data).length == 0) {
-          console.log('user not found');
+          logger.info('user not found');
           result({ kind: 'not_found' }, null);
           return;
         }
   
         // Credentials incorrect
-        console.log('unauthorized');
+        logger.info('unauthorized');
         result({ kind: 'unauthorized' }, null);
       });
   };

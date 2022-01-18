@@ -1,4 +1,5 @@
 const { connection } = require('../helpers/database.js');
+const {logger} = require('../helpers/logger');
 
 function createAccountDao(newAccount, result) {
 
@@ -6,13 +7,13 @@ function createAccountDao(newAccount, result) {
         [newAccount.clientCardNumber, newAccount.name, newAccount.type], function (e, data) {
             // if query gives error
             if (e) {
-                console.log('error: ', e);
+                logger.info('error: ', e);
                 result(e, null);
                 return;
             }
 
             // if account has been created
-            console.log('Account created successfully');
+            logger.info('Account created successfully');
             result(null, data);
         });
 };
@@ -24,27 +25,27 @@ function accountListDao(clientCardNumber, result) {
     connection.query(sqlQuery, function (e, data) {
         // if query gives error
         if (e) {
-            console.log('error: ', e);
+            logger.info('error: ', e);
             result(e, null);
             return;
         }
 
         // if account has been retrieved
         if (data.length) {
-            console.log('Accounts retrieved successfully');
+            logger.info('Accounts retrieved successfully');
             result(null, data);
             return;
         }
 
         // no accounts to display
         if (!data.length) {
-            console.log('There is no account to display');
+            logger.info('There is no account to display');
             result({ kind: 'resource_not_available' }, null);
             return;
         }
 
         // Internal Error
-        console.log('Something went wrong retrieving the accounts');
+        logger.info('Something went wrong retrieving the accounts');
         result({ kind: 'internal_server_error' }, null);
     });
 };
@@ -54,20 +55,20 @@ function updateAccountNameDao(accountNumber, name, result) {
         [name, accountNumber], function (e, data) {
             // if query gives error
             if (e) {
-                console.log('error: ', e);
+                logger.info('error: ', e);
                 result(e, null);
                 return;
             }
 
             //account not found
             if (data.affectedRows == 0) {
-                console.log('Account not found');
+                logger.info('Account not found');
                 result({ kind: 'not_found' }, null);
                 return;
             }
 
             // if account has been updated
-            console.log('Account name has been updated successfully');
+            logger.info('Account name has been updated successfully');
             result(null, data);
         });
 };
@@ -77,20 +78,20 @@ function deleteAccountDao(accountNumber, result) {
         accountNumber, function (e, data) {
             // if query gives error
             if (e) {
-                console.log('error: ', e);
+                logger.info('error: ', e);
                 result(e, null);
                 return;
             }
 
             //account not found
             if (data.affectedRows == 0) {
-                console.log('Account not found');
+                logger.info('Account not found');
                 result({ kind: 'not_found' }, null);
                 return;
             }
 
             // if account has been DELETED
-            console.log('Account has been deleted successfully');
+            logger.info('Account has been deleted successfully');
             result(null, data);
         });
 };

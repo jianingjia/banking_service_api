@@ -7,9 +7,9 @@ host: localhost:4000
 # basePath prefixes all resource paths
 basePath: /api
 tags:
-- name: "User"
-- name: "Account"
-- name: "Transaction"
+  - name: "User"
+  - name: "Account"
+  - name: "Transaction"
 schemes:
   # tip: remove http to make production-grade
   - http
@@ -27,8 +27,8 @@ paths:
     x-swagger-router-controller: userController
     put:
       tags:
-      - User
-      summary: User login 
+        - User
+      summary: User login
       description: Checks user credentials and returns success message
       # used as the method name of the controller
       operationId: userLoginController
@@ -149,7 +149,7 @@ paths:
     x-swagger-router-controller: accountController
     put:
       tags:
-      - Account
+        - Account
       summary: Update account name
       description: Update the specified account name and returns success message
       # used as the method name of the controller
@@ -190,7 +190,7 @@ paths:
     # endpoint for deleting an account
     delete:
       tags:
-      - Account
+        - Account
       summary: Delete an account
       description: Delete the specified account and returns success message
       # used as the method name of the controller
@@ -228,7 +228,7 @@ paths:
     x-swagger-router-controller: transactionController
     post:
       tags:
-      - Transaction
+        - Transaction
       summary: Create a new transaction
       description: Create a transaction for account and returns success message
       # used as the method name of the controller
@@ -264,7 +264,7 @@ paths:
             $ref: "#/definitions/InternalErrorResponse"
     get:
       tags:
-      - Transaction
+        - Transaction
       summary: Retrieve the list of transaction for an account
       description: Retrieve the list of transactions for a user
       # used as the method name of the controller
@@ -298,6 +298,58 @@ paths:
           description: Internal Error
           schema:
             $ref: "#/definitions/InternalErrorResponse"
+
+  # endpoint for retrieving transactions between a specified period
+  /accounts/{accountNumber}/filterByDate:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: transactionController
+    get:
+      tags:
+        - Transaction
+      summary: Filter transactions by date
+      description: Retrieve the list of transactions for an account between a specified period
+      # used as the method name of the controller
+      operationId: transactionFilterByDateController
+      parameters:
+        - name: accountNumber
+          in: path
+          description: The user's account number
+          type: integer
+          minimum: 1000000
+          maximum: 9999999
+          required: true
+        - name: start
+          in: query
+          description: The filter's start date
+          type: string
+          required: true
+        - name: end
+          in: query
+          description: The filter's end date
+          type: string
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              # a pointer to a definition
+              $ref: "#/definitions/Transaction"
+        # responses may fall through to errors
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+        "404":
+          description: Account Not Found
+          schema:
+            $ref: "#/definitions/NotFoundResponse"
+        "500":
+          description: Internal Error
+          schema:
+            $ref: "#/definitions/InternalErrorResponse"
+
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions

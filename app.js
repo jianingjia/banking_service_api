@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 4000;
 require('dotenv').config();
-
+const {logger} = require('./api/helpers/logger');
 
 // bodyParser setup
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,9 +31,9 @@ SwaggerExpress.create(config, function (err, swaggerExpress) {
   // install middleware
   swaggerExpress.register(app);
   app.listen(PORT);
-  console.log('info', `Banking Service API started on ${PORT}`);
+  logger.info(`Banking Service API started on ${PORT}`);
 });
 
 
-module.exports = {app}
+module.exports = { app }
 
