@@ -2,7 +2,7 @@ const { connection } = require('../helpers/database.js');
 const {logger} = require('../helpers/logger');
 
 function createTransactionDao(newTransaction, result) {
-    connection.query("INSERT INTO BANKING_SERVICE.TRANSACTION (accountNumber, name, amount) VALUES (?,?,?)",
+    connection.query("INSERT INTO TRANSACTION (accountNumber, name, amount) VALUES (?,?,?)",
         [newTransaction.accountNumber, newTransaction.name, newTransaction.amount], function (e, data) {
             // if query gives error
             if (e) {
@@ -13,7 +13,7 @@ function createTransactionDao(newTransaction, result) {
 
             // if transaction has been created
             // to update account balance
-            connection.query("UPDATE BANKING_SERVICE.ACCOUNT SET balance = balance + ? WHERE accountNumber = ?",
+            connection.query("UPDATE ACCOUNT SET balance = balance + ? WHERE accountNumber = ?",
                 [newTransaction.amount, newTransaction.accountNumber], function (e2, data2) {
                     // if query gives error
                     if (e2) {
@@ -34,7 +34,7 @@ function createTransactionDao(newTransaction, result) {
 
 function transactionListDao(accountNumber, result) {
 
-    const sqlQuery = `SELECT * FROM BANKING_SERVICE.TRANSACTION WHERE accountNumber = ${accountNumber}`;
+    const sqlQuery = `SELECT * FROM TRANSACTION WHERE accountNumber = ${accountNumber}`;
 
     connection.query(sqlQuery, function (e, data) {
         // if query gives error
@@ -66,7 +66,7 @@ function transactionListDao(accountNumber, result) {
 
 function transactionFilterByDateDao(accountNumber, start, end, result) {
 
-    connection.query(`SELECT * FROM BANKING_SERVICE.TRANSACTION WHERE accountNumber = ?
+    connection.query(`SELECT * FROM TRANSACTION WHERE accountNumber = ?
     AND ? <= date AND ? >= date ORDER BY date ASC`, 
     [accountNumber, start, end], function (e, data) {
 

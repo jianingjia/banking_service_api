@@ -4,7 +4,7 @@ const {logger} = require('../helpers/logger');
 
 function userLoginDao (clientCardNumber, password, result) {
 
-    const sqlQuery = `SELECT * FROM BANKING_SERVICE.USER WHERE CLIENTCARDNUMBER = ${clientCardNumber}`;
+    const sqlQuery = `SELECT * FROM USER WHERE CLIENTCARDNUMBER = ${clientCardNumber}`;
   
     connection.query(sqlQuery, function(e, data) {
         // if query gives error

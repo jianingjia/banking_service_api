@@ -3,7 +3,7 @@ const {logger} = require('../helpers/logger');
 
 function createAccountDao(newAccount, result) {
 
-    connection.query("INSERT INTO BANKING_SERVICE.ACCOUNT (clientCardNumber, name, type) VALUES (?,?,?)",
+    connection.query("INSERT INTO ACCOUNT (clientCardNumber, name, type) VALUES (?,?,?)",
         [newAccount.clientCardNumber, newAccount.name, newAccount.type], function (e, data) {
             // if query gives error
             if (e) {
@@ -20,7 +20,7 @@ function createAccountDao(newAccount, result) {
 
 function accountListDao(clientCardNumber, result) {
 
-    const sqlQuery = `SELECT * FROM BANKING_SERVICE.ACCOUNT WHERE clientCardNumber = ${clientCardNumber}`;
+    const sqlQuery = `SELECT * FROM ACCOUNT WHERE clientCardNumber = ${clientCardNumber}`;
 
     connection.query(sqlQuery, function (e, data) {
         // if query gives error
@@ -51,7 +51,7 @@ function accountListDao(clientCardNumber, result) {
 };
 
 function updateAccountNameDao(accountNumber, name, result) {
-    connection.query("UPDATE BANKING_SERVICE.ACCOUNT SET name = ? WHERE accountNumber = ?",
+    connection.query("UPDATE ACCOUNT SET name = ? WHERE accountNumber = ?",
         [name, accountNumber], function (e, data) {
             // if query gives error
             if (e) {
@@ -74,7 +74,7 @@ function updateAccountNameDao(accountNumber, name, result) {
 };
 
 function deleteAccountDao(accountNumber, result) {
-    connection.query("DELETE FROM BANKING_SERVICE.ACCOUNT WHERE accountNumber = ?",
+    connection.query("DELETE FROM ACCOUNT WHERE accountNumber = ?",
         accountNumber, function (e, data) {
             // if query gives error
             if (e) {

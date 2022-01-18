@@ -1,6 +1,8 @@
-CREATE DATABASE BANKING_SERVICE;
+show databases;
+use heroku_0280152eaafb006;
 
-create table BANKING_SERVICE.USER(
+select * from user;
+create table USER(
 	clientCardNumber BIGINT NOT NULL auto_increment,
     password varchar(32) NOT NULL,
     firstName varchar(50) NOT NULL,
@@ -9,38 +11,41 @@ create table BANKING_SERVICE.USER(
     primary key (clientCardNumber)
     );
     
-ALTER TABLE BANKING_SERVICE.USER AUTO_INCREMENT = 1000000000000000;
-DROP TABLE BANKING_SERVICE.USER;
-select * from BANKING_SERVICE.USER where clientCardNumber = 1000000000000000;
+ALTER TABLE USER AUTO_INCREMENT = 1000000000000000;
+DROP TABLE USER;
+select * from USER;
 
-insert into banking_service.user (password, firstname, lastname, dateOfBirth)
+insert into user (password, firstname, lastname, dateOfBirth)
 values ("testuser1", "John", "Doe", "1990-01-01");
 
-create table BANKING_SERVICE.ACCOUNT(
+insert into user (password, firstname, lastname, dateOfBirth)
+values ("testuser2", "Jane", "Doe", "1990-01-01");
+
+create table ACCOUNT(
 	clientCardNumber BIGINT NOT NULL,
     ACCOUNTNUMBER INT NOT NULL auto_increment,
     Name varchar(50) NOT NULL,
     TYPE SET('CHEQUING','SAVING') NOT NULL,
     BALANCE FLOAT(2) NOT NULL,
-    FOREIGN key (clientCardNumber) REFERENCES BANKING_SERVICE.USER(CLIENTCARDNUMBER),
+    FOREIGN key (clientCardNumber) REFERENCES USER(CLIENTCARDNUMBER),
     PRIMARY KEY (ACCOUNTNUMBER)
     );
     
-ALTER TABLE BANKING_SERVICE.ACCOUNT AUTO_INCREMENT = 1000000;
+ALTER TABLE ACCOUNT AUTO_INCREMENT = 1000000;
+select * from account;
+DROP TABLE ACCOUNT;
 
-DROP TABLE BANKING_SERVICE.ACCOUNT;
 
-
-create table BANKING_SERVICE.TRANSACTION(
+create table TRANSACTION(
     ACCOUNTNUMBER INT NOT NULL,
     TRANSACTIONNUMBER INT NOT NULL auto_increment,
     Name varchar(50) NOT NULL,
     DATE date NOT NULL,
     AMOUNT FLOAT(2) NOT NULL,
-    FOREIGN key (ACCOUNTNUMBER) REFERENCES BANKING_SERVICE.ACCOUNT(ACCOUNTNUMBER),
+    FOREIGN key (ACCOUNTNUMBER) REFERENCES ACCOUNT(ACCOUNTNUMBER),
     PRIMARY KEY (TRANSACTIONNUMBER)
     );
     
-ALTER TABLE BANKING_SERVICE.TRANSACTION AUTO_INCREMENT = 10000000;
-    
-DROP TABLE BANKING_SERVICE.TRANSACTION;
+ALTER TABLE TRANSACTION AUTO_INCREMENT = 10000000;
+select * from TRANSACTION;
+DROP TABLE TRANSACTION;
