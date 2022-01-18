@@ -3,7 +3,7 @@ info:
   version: "1.0.0"
   title: Banking Service API Documentations
 # during dev, should point to your local machine
-host: localhost:4000
+host: banking-service-api.herokuapp.com:4000
 # basePath prefixes all resource paths
 basePath: /api
 tags:
